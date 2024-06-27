@@ -4,6 +4,7 @@ import SSHKeyList from './components/SSHKeyList';
 import { downloadKeys } from './utils/download';
 import { saveToLocalStorage, loadFromLocalStorage } from './utils/localStorage';
 
+import './App.css';
 const App = () => {
   const [sshKeys, setSshKeys] = useState([]);
 
@@ -24,13 +25,21 @@ const App = () => {
     downloadKeys(sshKeys);
   };
 
+  const handleClear = () => {
+    setSshKeys([]);
+    localStorage.removeItem('sshKeys');
+  };
+
   return (
     <div>
       <h1>SSH Key Submission</h1>
       <SSHKeyForm onSubmit={handleFormSubmit} />
       <SSHKeyList sshKeys={sshKeys} />
       {sshKeys.length > 0 && (
-        <button onClick={handleDownload}>Download Keys</button>
+        <div>
+          <button onClick={handleDownload}>Download Keys</button>
+          <button onClick={handleClear}>Clear Keys</button>
+        </div>
       )}
     </div>
   );
