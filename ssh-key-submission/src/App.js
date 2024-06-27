@@ -3,7 +3,6 @@ import SSHKeyForm from './components/SSHKeyForm';
 import SSHKeyList from './components/SSHKeyList';
 import { downloadKeys } from './utils/download';
 import { saveToLocalStorage, loadFromLocalStorage } from './utils/localStorage';
-import './App.css';
 
 const App = () => {
   const [sshKeys, setSshKeys] = useState([]);
@@ -13,10 +12,12 @@ const App = () => {
     setSshKeys(storedKeys);
   }, []);
 
+  useEffect(() => {
+    saveToLocalStorage(sshKeys);
+  }, [sshKeys]);
+
   const handleFormSubmit = (key) => {
-    const updatedKeys = [...sshKeys, key];
-    setSshKeys(updatedKeys);
-    saveToLocalStorage(updatedKeys);
+    setSshKeys([...sshKeys, key]);
   };
 
   const handleDownload = () => {
@@ -24,14 +25,14 @@ const App = () => {
   };
 
   return (
-    <div className="centered-content">
-    <h1>SSH Key Submission</h1>
-    <SSHKeyForm onSubmit={handleFormSubmit} />
-    <SSHKeyList sshKeys={sshKeys} />
-    {sshKeys.length > 0 && (
-      <button onClick={handleDownload}>Download Keys</button>
-    )}
-  </div>
+    <div>
+      <h1>SSH Key Submission</h1>
+      <SSHKeyForm onSubmit={handleFormSubmit} />
+      <SSHKeyList sshKeys={sshKeys} />
+      {sshKeys.length > 0 && (
+        <button onClick={handleDownload}>Download Keys</button>
+      )}
+    </div>
   );
 };
 
