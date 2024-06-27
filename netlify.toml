@@ -1,0 +1,4 @@
+[build]
+  base = "C:\\Users\\jchon\\OneDrive\\Desktop\\ssh-blacklister"
+  publish = "ssh-key-submission/build"
+  command = "npm run build"

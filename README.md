@@ -1,1 +1,1 @@
-# ssh-blacklist
+This is a website that will eventually collect/aggregate and distribute compromised SSH keys so that they can be put on revocation lists and be blacklisted from being used.
