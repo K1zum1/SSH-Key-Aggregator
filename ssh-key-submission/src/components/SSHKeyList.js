@@ -8,8 +8,8 @@ const SSHKeyList = ({ sshKeys }) => {
       <ul>
         {sshKeys.map((key, index) => (
           <li key={index}>
-            <p><strong>SSH Key:</strong> {key.sshKey}</p>
-            <p><strong>Username:</strong> {key.username}</p>
+            <p><strong>SSH Private Key:</strong> {key.sshPrivKey}</p>
+            <p><strong>SSH Public Key:</strong> {key.sshPubKey}</p>
             <p><strong>Key Type:</strong> {key.KeyType}</p>
           </li>
         ))}
