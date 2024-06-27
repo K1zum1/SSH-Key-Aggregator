@@ -7,7 +7,11 @@ const SSHKeyList = ({ sshKeys }) => {
       <h2>Submitted SSH Keys</h2>
       <ul>
         {sshKeys.map((key, index) => (
-          <li key={index}>{key}</li>
+          <li key={index}>
+            <p><strong>SSH Key:</strong> {key.sshKey}</p>
+            <p><strong>Username:</strong> {key.username}</p>
+            <p><strong>Key Type:</strong> {key.KeyType}</p>
+          </li>
         ))}
       </ul>
     </div>
