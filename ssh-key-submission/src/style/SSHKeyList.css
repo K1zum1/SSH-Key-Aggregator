@@ -18,7 +18,13 @@ ul {
 li {
     background-color: #f9f9f9;
     margin: 5px 0;
-    padding: 10px;
+    padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+li:hover {
+    transform: scale(1.02);
 }
