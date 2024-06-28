@@ -7,8 +7,13 @@ const App = () => {
   const [sshKeys, setSshKeys] = useState([]);
 
   useEffect(() => {
-    fetch('/api/keys')
-      .then(response => response.json())
+    fetch('/api/sshkeys')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('bad network lmao ' + response.statusText);
+        }
+        return response.json();
+      })
       .then(data => setSshKeys(data))
       .catch(error => console.error('Error fetching SSH keys:', error));
   }, []);
@@ -22,13 +27,15 @@ const App = () => {
         },
         body: JSON.stringify(key),
       });
+      if (!response.ok) {
+        throw new Error('bad network lmao ' + response.statusText);
+      }
       const data = await response.json();
       setSshKeys([...sshKeys, data]);
     } catch (error) {
       console.error('Error submitting SSH key:', error);
     }
   };
-  
 
   const handleDownload = () => {
     downloadKeys(sshKeys);
@@ -36,7 +43,6 @@ const App = () => {
 
   const handleClear = () => {
     setSshKeys([]);
-    
   };
 
   return (
