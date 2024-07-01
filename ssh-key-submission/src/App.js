@@ -6,7 +6,7 @@ const App = () => {
   const [sshKeys, setSshKeys] = useState([]);
 
   useEffect(() => {
-    fetch('https://ssh-blacklist.vercel.app/api/getKeys')
+    fetch('/api/getKeys') // Adjusted fetch URL for getting keys
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -19,7 +19,7 @@ const App = () => {
 
   const handleFormSubmit = async (key) => {
     try {
-      const response = await fetch('https://ssh-blacklist.vercel.app/api/submitKey', { 
+      const response = await fetch('/api/submitKey', { // Adjusted fetch URL for submitting key
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
