@@ -47,14 +47,14 @@ const SSHKeyForm = ({ onSubmit }) => {
       <textarea
         value={sshPrivKey}
         onChange={(e) => setSSHPrivKey(e.target.value)}
-        placeholder="Enter your compromised SSH Private Key"
+        placeholder="Enter your SSH Private Key, including '-----BEGIN PRIVATE KEY-----' and '-----END PRIVATE KEY-----'"
         rows="4"
         cols="50"
       />
       <textarea
         value={sshPubKey}
         onChange={(e) => setSSHPubKey(e.target.value)}
-        placeholder="Enter your compromised SSH Public Key"
+        placeholder="Enter your SSH Public Key, starting with 'ssh-rsa', 'ssh-dss', 'ecdsa-sha2-nistp256', or 'ssh-ed25519'"
         rows="4"
         cols="50"
       />
