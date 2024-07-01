@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import SSHKeyForm from './components/SSHKeyForm';
-import SSHKeyList from './components/SSHKeyList';
 import { downloadKeys } from './utils/download';
 
 const App = () => {
   const [sshKeys, setSshKeys] = useState([]);
 
   useEffect(() => {
-    fetch('/api/sshkeys')
+    fetch('https://ssh-blacklist.vercel.app/api/getKeys')
       .then(response => {
         if (!response.ok) {
-          throw new Error('bad network lmao ' + response.statusText);
+          throw new Error('Network response was not ok');
         }
         return response.json();
       })
@@ -20,7 +19,7 @@ const App = () => {
 
   const handleFormSubmit = async (key) => {
     try {
-      const response = await fetch('/api/sshkeys', {
+      const response = await fetch('https://ssh-blacklist.vercel.app/api/submitKey', { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -28,7 +27,7 @@ const App = () => {
         body: JSON.stringify(key),
       });
       if (!response.ok) {
-        throw new Error('bad network lmao ' + response.statusText);
+        throw new Error('Network response was not ok');
       }
       const data = await response.json();
       setSshKeys([...sshKeys, data]);
@@ -49,13 +48,8 @@ const App = () => {
     <div>
       <h1>SSH Key Submission</h1>
       <SSHKeyForm onSubmit={handleFormSubmit} />
-      <SSHKeyList sshKeys={sshKeys} />
-      {sshKeys.length > 0 && (
-        <div>
-          <button onClick={handleDownload}>Download Keys</button>
-          <button onClick={handleClear}>Clear Keys</button>
-        </div>
-      )}
+      <button onClick={handleDownload}>Download Keys</button>
+      <button onClick={handleClear}>Clear Keys</button>
     </div>
   );
 };

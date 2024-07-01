@@ -16,7 +16,6 @@ const pool = new Pool({
 });
 
 app.post('/api/sshkeys', async (req, res) => {
-  console.log('POST /api/sshkeys', req.body);
   const { sshPrivKey, sshPubKey, KeyType } = req.body;
   try {
     const result = await pool.query(
@@ -31,7 +30,6 @@ app.post('/api/sshkeys', async (req, res) => {
 });
 
 app.get('/api/sshkeys', async (req, res) => {
-  console.log('GET /api/sshkeys');
   try {
     const result = await pool.query('SELECT * FROM sshkeys');
     res.json(result.rows);
@@ -41,8 +39,6 @@ app.get('/api/sshkeys', async (req, res) => {
   }
 });
 
-
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
