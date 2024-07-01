@@ -4,23 +4,34 @@ import '../style/SSHKeyForm.css';
 const SSHKeyForm = ({ onSubmit }) => {
   const [sshPrivKey, setSSHPrivKey] = useState('');
   const [sshPubKey, setSSHPubKey] = useState('');
-  const [keyType, setKeyType] = useState('');
   const [error, setError] = useState('');
+
+  const getKeyTypeFromPublicKey = (key) => {
+    const patterns = {
+      'RSA': /^(ssh-rsa) [A-Za-z0-9+/]+={0,3}( .+)?$/,
+      'DSA': /^(ssh-dss) [A-Za-z0-9+/]+={0,3}( .+)?$/,
+      'ECDSA': /^(ecdsa-sha2-nistp256) [A-Za-z0-9+/]+={0,3}( .+)?$/,
+      'Ed25519': /^(ssh-ed25519) [A-Za-z0-9+/]+={0,3}( .+)?$/
+    };
+
+    for (const [type, pattern] of Object.entries(patterns)) {
+      if (pattern.test(key)) {
+        return type;
+      }
+    }
+
+    return null; 
+  };
 
   const isValidSSHPrivateKey = (key) => {
     return key.includes('-----BEGIN') && key.includes('-----END');
-  };
-
-  const isValidSSHPublicKey = (key) => {
-    const pattern = /^(ssh-(rsa|dss|ed25519|ecdsa)) [A-Za-z0-9+/]+={0,3}( .+)?$/;
-    return pattern.test(key);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
 
-    if (!sshPrivKey.trim() || !sshPubKey.trim() || !keyType.trim()) {
+    if (!sshPrivKey.trim() || !sshPubKey.trim()) {
       setError('Please fill out all fields.');
       return;
     }
@@ -30,7 +41,8 @@ const SSHKeyForm = ({ onSubmit }) => {
       return;
     }
 
-    if (!isValidSSHPublicKey(sshPubKey)) {
+    const keyType = getKeyTypeFromPublicKey(sshPubKey);
+    if (!keyType) {
       setError('Invalid SSH Public Key.');
       return;
     }
@@ -38,7 +50,6 @@ const SSHKeyForm = ({ onSubmit }) => {
     onSubmit({ sshPrivKey, sshPubKey, keyType });
     setSSHPrivKey('');
     setSSHPubKey('');
-    setKeyType('');
   };
 
   return (
@@ -58,16 +69,6 @@ const SSHKeyForm = ({ onSubmit }) => {
         rows="4"
         cols="50"
       />
-      <select
-        value={keyType}
-        onChange={(e) => setKeyType(e.target.value)}
-      >
-        <option value="">Select Key Type</option>
-        <option value="RSA">RSA</option>
-        <option value="DSA">DSA</option>
-        <option value="ECDSA">ECDSA</option>
-        <option value="Ed25519">Ed25519</option>
-      </select>
       <button type="submit">Submit</button>
     </form>
   );
