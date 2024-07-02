@@ -11,7 +11,7 @@ const App = () => {
     const fetchKeys = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('../api/getKeys');
+        const response = await fetch('/api/getKeys');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -24,15 +24,14 @@ const App = () => {
         setIsLoading(false);
       }
     };
-  
+
     fetchKeys();
   }, []);
-  
 
   const handleFormSubmit = async (key) => {
     setIsLoading(true);
     try {
-      const response = await fetch('../api/submitKey', {
+      const response = await fetch('/api/submitKey', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,7 +50,6 @@ const App = () => {
       setIsLoading(false);
     }
   };
-  
 
   const handleDownload = () => {
     downloadKeys(sshKeys);
