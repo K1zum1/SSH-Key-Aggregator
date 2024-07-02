@@ -6,7 +6,7 @@ const App = () => {
   const [sshKeys, setSshKeys] = useState([]);
 
   useEffect(() => {
-    fetch('/api/getKeys') // Adjusted fetch URL for getting keys
+    fetch('/api/getKeys')
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -19,7 +19,7 @@ const App = () => {
 
   const handleFormSubmit = async (key) => {
     try {
-      const response = await fetch('/api/submitKey', { // Adjusted fetch URL for submitting key
+      const response = await fetch('/api/submitKey', { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -40,16 +40,12 @@ const App = () => {
     downloadKeys(sshKeys);
   };
 
-  const handleClear = () => {
-    setSshKeys([]);
-  };
-
+  
   return (
     <div>
       <h1>SSH Key Submission</h1>
       <SSHKeyForm onSubmit={handleFormSubmit} />
       <button onClick={handleDownload}>Download Keys</button>
-      <button onClick={handleClear}>Clear Keys</button>
     </div>
   );
 };
