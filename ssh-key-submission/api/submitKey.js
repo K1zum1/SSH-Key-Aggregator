@@ -6,12 +6,13 @@ export default async function handler(request, response) {
 
   try {
     const result = await sql`
-      INSERT INTO SSHKeys (sshPrivKey, sshPubKey, keyType)
+      INSERT INTO "sshkeys" ("sshPrivKey", "sshPubKey", "keyType")
       VALUES (${sshPrivKey}, ${sshPubKey}, ${keyType})
-      RETURNING *;  // Optionally return the inserted row
+      RETURNING *;
     `;
-    response.status(200).json({ result });
+    return response.status(200).json(result); // Assuming `result` is the inserted row(s)
   } catch (error) {
-    response.status(500).json({ error: error.message });
+    console.error('Error inserting SSH key:', error);
+    return response.status(500).json({ error: 'Failed to insert SSH key.' });
   }
 }

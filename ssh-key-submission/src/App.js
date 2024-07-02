@@ -11,7 +11,7 @@ const App = () => {
     const fetchKeys = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('/api/getKeys'); // Update API endpoint
+        const response = await fetch('../api/getKeys');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -32,7 +32,7 @@ const App = () => {
   const handleFormSubmit = async (key) => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/submitKey', { // Update API endpoint
+      const response = await fetch('../api/submitKey', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
