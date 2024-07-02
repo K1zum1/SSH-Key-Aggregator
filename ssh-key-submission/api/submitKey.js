@@ -7,7 +7,8 @@ export default async function handler(request, response) {
   try {
     const result = await sql`
       INSERT INTO SSHKeys (sshPrivKey, sshPubKey, keyType)
-      VALUES (${sshPrivKey}, ${sshPubKey}, ${keyType});
+      VALUES (${sshPrivKey}, ${sshPubKey}, ${keyType})
+      RETURNING *;  // Optionally return the inserted row
     `;
     response.status(200).json({ result });
   } catch (error) {

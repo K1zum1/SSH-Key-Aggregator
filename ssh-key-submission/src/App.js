@@ -11,7 +11,7 @@ const App = () => {
     const fetchKeys = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('https://ssh-blacklist.vercel.app');
+        const response = await fetch('/api/getKeys'); // Update API endpoint
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -24,14 +24,15 @@ const App = () => {
         setIsLoading(false);
       }
     };
-
+  
     fetchKeys();
   }, []);
+  
 
   const handleFormSubmit = async (key) => {
     setIsLoading(true);
     try {
-      const response = await fetch('https://ssh-blacklist.vercel.app', { 
+      const response = await fetch('/api/submitKey', { // Update API endpoint
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -45,11 +46,12 @@ const App = () => {
       setSshKeys(prevKeys => [...prevKeys, data]);
     } catch (error) {
       console.error('Error:', error);
-      setError('Failed .');
+      setError('Failed to submit SSH key.');
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   const handleDownload = () => {
     downloadKeys(sshKeys);
