@@ -1,4 +1,3 @@
-// api/getKeys.js
 import { sql } from '@vercel/postgres';
 
 export default async function handler(request, response) {
@@ -8,6 +7,7 @@ export default async function handler(request, response) {
     `;
     response.status(200).json(result);
   } catch (error) {
-    response.status(500).json({ error: error.message });
+    console.error('Database query error:', error);
+    response.status(500).json({ error: 'Internal Server Error' });
   }
 }

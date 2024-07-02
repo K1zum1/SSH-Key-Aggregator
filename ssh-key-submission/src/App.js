@@ -4,22 +4,34 @@ import { downloadKeys } from './utils/download';
 
 const App = () => {
   const [sshKeys, setSshKeys] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    fetch('/api/getKeys')
-      .then(response => {
+    const fetchKeys = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('https://ssh-blacklist.vercel.app');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        return response.json();
-      })
-      .then(data => setSshKeys(data))
-      .catch(error => console.error('Error fetching SSH keys:', error));
+        const data = await response.json();
+        setSshKeys(data);
+      } catch (error) {
+        console.error('Error fetching SSH keys:', error);
+        setError('Failed to fetch SSH keys.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchKeys();
   }, []);
 
   const handleFormSubmit = async (key) => {
+    setIsLoading(true);
     try {
-      const response = await fetch('/api/submitKey', { 
+      const response = await fetch('https://ssh-blacklist.vercel.app', { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -27,12 +39,15 @@ const App = () => {
         body: JSON.stringify(key),
       });
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('Error');
       }
       const data = await response.json();
-      setSshKeys([...sshKeys, data]);
+      setSshKeys(prevKeys => [...prevKeys, data]);
     } catch (error) {
-      console.error('Error submitting SSH key:', error);
+      console.error('Error:', error);
+      setError('Failed .');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -40,12 +55,13 @@ const App = () => {
     downloadKeys(sshKeys);
   };
 
-  
   return (
     <div>
       <h1>SSH Key Submission</h1>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <SSHKeyForm onSubmit={handleFormSubmit} />
-      <button onClick={handleDownload}>Download Keys</button>
+      <button onClick={handleDownload} disabled={isLoading}>Download Keys</button>
+      {isLoading && <p>Loading...</p>}
     </div>
   );
 };
