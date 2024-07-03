@@ -6,23 +6,6 @@ const SSHKeyForm = ({ onSubmit }) => {
   const [sshPubKey, setSSHPubKey] = useState('');
   const [error, setError] = useState('');
 
-  const getKeyTypeFromPublicKey = (key) => {
-    const patterns = {
-      'RSA': /^(ssh-rsa) [A-Za-z0-9+/]+={0,3}( .+)?$/,
-      'DSA': /^(ssh-dss) [A-Za-z0-9+/]+={0,3}( .+)?$/,
-      'ECDSA': /^(ecdsa-sha2-nistp256) [A-Za-z0-9+/]+={0,3}( .+)?$/,
-      'Ed25519': /^(ssh-ed25519) [A-Za-z0-9+/]+={0,3}( .+)?$/
-    };
-
-    for (const [type, pattern] of Object.entries(patterns)) {
-      if (pattern.test(key)) {
-        return type;
-      }
-    }
-
-    return null; 
-  };
-
   const isValidSSHPrivateKey = (key) => {
     return key.includes('-----BEGIN') && key.includes('-----END');
   };
@@ -37,17 +20,11 @@ const SSHKeyForm = ({ onSubmit }) => {
     }
 
     if (!isValidSSHPrivateKey(sshPrivKey)) {
-      setError('Invalid SSH Private Key.');
+      setError('Invalid SSH Private Key format.');
       return;
     }
 
-    const keyType = getKeyTypeFromPublicKey(sshPubKey);
-    if (!keyType) {
-      setError('Invalid SSH Public Key.');
-      return;
-    }
-
-    onSubmit({ sshPrivKey, sshPubKey, keyType });
+    onSubmit({ sshPrivKey, sshPubKey });
     setSSHPrivKey('');
     setSSHPubKey('');
   };
@@ -58,14 +35,14 @@ const SSHKeyForm = ({ onSubmit }) => {
       <textarea
         value={sshPrivKey}
         onChange={(e) => setSSHPrivKey(e.target.value)}
-        placeholder="Enter your SSH Private Key, including '-----BEGIN PRIVATE KEY-----' and '-----END PRIVATE KEY-----'"
+        placeholder="Enter your SSH Private Key..."
         rows="4"
         cols="50"
       />
       <textarea
         value={sshPubKey}
         onChange={(e) => setSSHPubKey(e.target.value)}
-        placeholder="Enter your SSH Public Key, starting with 'ssh-rsa', 'ssh-dss', 'ecdsa-sha2-nistp256', or 'ssh-ed25519'"
+        placeholder="Enter your SSH Public Key..."
         rows="4"
         cols="50"
       />

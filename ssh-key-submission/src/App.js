@@ -1,17 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import SSHKeyForm from './components/SSHKeyForm';
-import { downloadKeys } from './utils/download';
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-
-
-  const handleFormSubmit = async (key) => {
+  const handleFormSubmit = async ({ sshPrivKey, sshPubKey }) => {
     setIsLoading(true);
     try {
-      console.log('Submitting SSH key:', key);
+      const response = await fetch('/api/add-key', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ privKey: sshPrivKey, pubKey: sshPubKey }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit SSH key.');
+      }
+
+      const data = await response.json();
+      console.log('Submitted SSH key successfully:', data);
     } catch (error) {
       console.error('Error:', error);
       setError('Failed to submit SSH key.');
@@ -22,10 +32,10 @@ const App = () => {
 
   return (
     <div>
-      <h1>SSH Key Submission Test</h1>
+      <h1>SSH Key Submission Form</h1>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <SSHKeyForm onSubmit={handleFormSubmit} />
-      {/* <button onClick={handleDownload} disabled={isLoading}>Download Keys</button> */}
+      {isLoading && <p>Submitting your key</p>}
     </div>
   );
 };
