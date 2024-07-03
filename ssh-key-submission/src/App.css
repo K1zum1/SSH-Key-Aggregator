@@ -1,48 +1,16 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+  background-color: #221e1e; 
   margin: 0;
   padding: 20px;
 }
 
 h1 {
-  color: #333;
+  color: #ac9191;
 }
 
 div {
   text-align: center;
 }
 
-.SSHKeyForm, .SSHKeyList {
-  margin: 20px auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  width: 80%;
-  max-width: 600px;
-}
 
-button {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  margin: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-button:last-child {
-  background-color: #dc3545;
-}
-
-button:last-child:hover {
-  background-color: #c82333;
-}

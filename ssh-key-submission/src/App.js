@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import SSHKeyForm from './components/SSHKeyForm';
+import './App.css';
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(false);
