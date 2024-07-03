@@ -1,5 +1,8 @@
+// App.js
 import React, { useState } from 'react';
 import SSHKeyForm from './components/SSHKeyForm';
+import { BsCircleFill } from 'react-icons/bs';
+
 import './App.css';
 
 const App = () => {
@@ -27,16 +30,21 @@ const App = () => {
       console.error('Error:', error);
       setError('Failed to submit SSH key.');
     } finally {
-      setIsLoading(false);
+      setTimeout(() => setIsLoading(false), 2000);
     }
   };
 
   return (
     <div>
-      <h1>SSH Key Submission Form</h1>
+      <h1 className='titleText'>SSH Key Submission Form</h1>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <SSHKeyForm onSubmit={handleFormSubmit} />
-      {isLoading && <p>Submitting your key</p>}
+      {isLoading && (
+        <p className="loading-text">
+          Submitting your key
+          <span className="loading-spinner"><BsCircleFill /></span> 
+        </p>
+      )}
     </div>
   );
 };

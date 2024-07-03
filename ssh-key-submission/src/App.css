@@ -1,16 +1,67 @@
+/* App.css */
+
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-  background-color: #221e1e; 
+  font-family: Arial, sans-serif;
+  background-color: #331d1d;
   margin: 0;
   padding: 20px;
 }
 
 h1 {
-  color: #ac9191;
+  color: #ffffff;
 }
 
-div {
+.SSHKeyForm {
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 80%;
+  max-width: 600px;
+}
+
+.titleText {
   text-align: center;
 }
+button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
 
+button:hover {
+  background-color: #0056b3;
+}
 
+button:last-child {
+  background-color: #dc3545;
+}
+
+button:last-child:hover {
+  background-color: #c82333;
+}
+
+.loading-text {
+  color: #007bff; /* Change loading text color to match button background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite; /* Animation for spinning effect */
+  font-size: 24px; /* Adjust size as needed */
+  margin-left: 10px; /* Space between text and spinner */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
