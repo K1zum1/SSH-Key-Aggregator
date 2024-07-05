@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import '../style/SSHKeyForm.css';
-import { parseKey } from 'ssh-keygen'; 
 
 const SSHKeyForm = ({ onSubmit }) => {
   const [sshPrivKey, setSSHPrivKey] = useState('');
@@ -8,17 +7,7 @@ const SSHKeyForm = ({ onSubmit }) => {
   const [error, setError] = useState('');
 
   const isValidSSHPrivateKey = (key) => {
-    // Basic format check
     return key.includes('-----BEGIN') && key.includes('-----END');
-  };
-
-  const isValidSSHKey = (key) => {
-    try {
-      const parsedKey = parseKey(key); 
-      return !!parsedKey; 
-    } catch (error) {
-      return false; 
-    }
   };
 
   const handleSubmit = (e) => {
@@ -32,11 +21,6 @@ const SSHKeyForm = ({ onSubmit }) => {
 
     if (!isValidSSHPrivateKey(sshPrivKey)) {
       setError('Invalid SSH Private Key format.');
-      return;
-    }
-
-    if (!isValidSSHKey(sshPubKey)) {
-      setError('Invalid SSH Public Key.');
       return;
     }
 
