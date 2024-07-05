@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../style/SSHKeyForm.css';
-import { parseKey } from 'ssh-keygen'; // Import parseKey from ssh-keygen
+import { parseKey } from 'ssh-keygen'; 
 
 const SSHKeyForm = ({ onSubmit }) => {
   const [sshPrivKey, setSSHPrivKey] = useState('');

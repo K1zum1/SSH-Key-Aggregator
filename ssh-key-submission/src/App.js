@@ -1,9 +1,9 @@
-// App.js
 import React, { useState } from 'react';
 import SSHKeyForm from './components/SSHKeyForm';
-import { BsCircleFill } from 'react-icons/bs';
-
 import './App.css';
+import { quantum } from 'ldrs'
+
+quantum.register()
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -34,17 +34,38 @@ const App = () => {
     }
   };
 
+  const handleDownloadKRL = async () => {
+    try {
+      const response = await fetch('/api/generate-krl');
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = 'revocation-list.krl';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading KRL file:', error);
+      setError('Failed to download KRL file.');
+    }
+  };
+
   return (
     <div>
       <h1 className='titleText'>SSH Key Submission Form</h1>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <SSHKeyForm onSubmit={handleFormSubmit} />
       {isLoading && (
-        <p className="loading-text">
-          Submitting your key
-          <span className="loading-spinner"><BsCircleFill /></span> 
-        </p>
+        <div className="loading-container">
+          <p className="loading-text">Submitting your key</p>
+          <l-quantum size="35" speed="1.75" color="white"></l-quantum>
+        </div>
       )}
+      <div className="button-container">
+        <button onClick={handleDownloadKRL}>Download KRL</button>
+      </div>
     </div>
   );
 };
