@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import SSHKeyForm from './components/SSHKeyForm';
 import './App.css';
-import { quantum } from 'ldrs'
+import { quantum } from 'ldrs';
 
-quantum.register()
+quantum.register();
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +54,7 @@ const App = () => {
 
   return (
     <div>
-      <h1 className='titleText'>SSH Key Submission Form</h1>
+      <h1 className="titleText">SSH Key Submission Form</h1>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <SSHKeyForm onSubmit={handleFormSubmit} />
       {isLoading && (
