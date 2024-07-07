@@ -1,35 +1,22 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { sql, QueryResult } from '@vercel/postgres';
-import fs from 'fs';
-import { promisify } from 'util';
+import { Client } from 'pg';
 
-const writeFile = promisify(fs.writeFile);
-const readFile = promisify(fs.readFile);
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+});
 
-interface SSHKey {
-  PubKey: string;
-}
+client.connect();
 
-export default async function handler(request: VercelRequest, response: VercelResponse) {
+export default async function generateKRL(req: VercelRequest, res: VercelResponse) {
   try {
-    const { rows }: QueryResult<SSHKey> = await sql`SELECT PubKey FROM SSHKeys`;
+    const query = 'SELECT privKey, pubKey, keyType, ipAddress FROM SSHKeys';
+    const result = await client.query(query);
 
-    if (rows.length === 0) {
-      throw new Error('No SSH keys found in the database.');
-    }
+    const krlData = result.rows;
 
-    const krlContent = rows.map((key) => key.PubKey).join('\n');
-
-    const filePath = '/tmp/revocation-list.krl';
-    await writeFile(filePath, krlContent);
-
-    const fileContent = await readFile(filePath);
-
-    response.setHeader('Content-Disposition', 'attachment; filename=revocation-list.krl');
-    response.setHeader('Content-Type', 'application/octet-stream');
-    response.status(200).send(fileContent);
+    return res.status(200).json(krlData);
   } catch (error) {
-    console.error('Error generating KRL file:', error);
-    response.status(500).json({ error: 'Failed to generate KRL file' });
+    console.error('Error generating KRL:', error);
+    return res.status(500).json({ error: 'Failed to generate KRL.' });
   }
 }

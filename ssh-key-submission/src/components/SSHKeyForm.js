@@ -6,10 +6,6 @@ const SSHKeyForm = ({ onSubmit }) => {
   const [sshPubKey, setSSHPubKey] = useState('');
   const [error, setError] = useState('');
 
-  const isValidSSHPrivateKey = (key) => {
-    return key.includes('-----BEGIN') && key.includes('-----END');
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
@@ -19,10 +15,10 @@ const SSHKeyForm = ({ onSubmit }) => {
       return;
     }
 
-    if (!isValidSSHPrivateKey(sshPrivKey)) {
-      setError('Invalid SSH Private Key format.');
-      return;
-    }
+    // if (!verifyKeyPair(sshPrivKey, sshPubKey)) {
+    //   setError('Public and Private keys do not match.');
+    //   return;
+    // }
 
     onSubmit({ sshPrivKey, sshPubKey });
     setSSHPrivKey('');

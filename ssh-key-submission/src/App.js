@@ -37,7 +37,11 @@ const App = () => {
   const handleDownloadKRL = async () => {
     try {
       const response = await fetch('/api/generate-krl');
-      const blob = await response.blob();
+      if (!response.ok) {
+        throw new Error('Failed to generate KRL.');
+      }
+      const data = await response.json();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.style.display = 'none';
