@@ -2,12 +2,12 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 import { Client } from 'pg';
 
 const client = new Client({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.POSTGRES_URL,
 });
 
 client.connect().catch((err) => {
   console.error('Connection error:', err.stack);
-  process.exit(1); 
+  process.exit(1);
 });
 
 export default async function addKey(req: VercelRequest, res: VercelResponse) {
