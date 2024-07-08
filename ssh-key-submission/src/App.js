@@ -9,7 +9,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleFormSubmit = async ({ sshPrivKey, sshPubKey }) => {
+  const handleFormSubmit = async ({ sshPrivKey, sshPubKey, keyType }) => {
     setIsLoading(true);
     try {
       const response = await fetch('/api/add-key', {
@@ -17,7 +17,7 @@ const App = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ privKey: sshPrivKey, pubKey: sshPubKey }),
+        body: JSON.stringify({ privKey: sshPrivKey, pubKey: sshPubKey, keyType }),
       });
 
       if (!response.ok) {
