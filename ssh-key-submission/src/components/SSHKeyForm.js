@@ -6,6 +6,24 @@ const SSHKeyForm = ({ onSubmit }) => {
   const [sshPubKey, setSSHPubKey] = useState('');
   const [error, setError] = useState('');
 
+  const extractKeyType = (pubKey) => {
+    if (pubKey.startsWith('ssh-rsa')) {
+      return 'RSA';
+    } else if (pubKey.startsWith('ssh-dss')) {
+      return 'DSA';
+    } else if (pubKey.startsWith('ssh-ed25519')) {
+      return 'ED25519';
+    } else if (pubKey.startsWith('ecdsa-sha2-nistp256')) {
+      return 'ECDSA';
+    } else if (pubKey.startsWith('ecdsa-sha2-nistp384')) {
+      return 'ECDSA';
+    } else if (pubKey.startsWith('ecdsa-sha2-nistp521')) {
+      return 'ECDSA';
+    } else {
+      return 'UNKNOWN INVALID KEY';
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
@@ -25,7 +43,8 @@ const SSHKeyForm = ({ onSubmit }) => {
     } else if (!isPubKeyValid) {
       setError('Invalid SSH public key format.');
     } else {
-      onSubmit({ sshPrivKey, sshPubKey });
+      const keyType = extractKeyType(sshPubKey);
+      onSubmit({ sshPrivKey, sshPubKey, keyType });
       setSSHPrivKey('');
       setSSHPubKey('');
     }
