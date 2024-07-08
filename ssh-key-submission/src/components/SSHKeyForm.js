@@ -15,14 +15,30 @@ const SSHKeyForm = ({ onSubmit }) => {
       return;
     }
 
-    // if (!verifyKeyPair(sshPrivKey, sshPubKey)) {
-    //   setError('Public and Private keys do not match.');
-    //   return;
-    // }
+    const isPrivKeyValid = isValidSSHKey(sshPrivKey, 'private');
+    const isPubKeyValid = isValidSSHKey(sshPubKey, 'public');
 
-    onSubmit({ sshPrivKey, sshPubKey });
-    setSSHPrivKey('');
-    setSSHPubKey('');
+    if (!isPrivKeyValid && !isPubKeyValid) {
+      setError('Invalid SSH private and public key formats.');
+    } else if (!isPrivKeyValid) {
+      setError('Invalid SSH private key format.');
+    } else if (!isPubKeyValid) {
+      setError('Invalid SSH public key format.');
+    } else {
+      onSubmit({ sshPrivKey, sshPubKey });
+      setSSHPrivKey('');
+      setSSHPubKey('');
+    }
+  };
+
+  const isValidSSHKey = (key, type) => {
+    let regex;
+    if (type === 'private') {
+      regex = /^-----BEGIN ((EC|PGP|DSA|RSA|OPENSSH) )?PRIVATE KEY-----(.|\n|\r)*?-----END ((EC|PGP|DSA|RSA|OPENSSH) )?PRIVATE KEY-----$/;
+    } else {
+      regex = /^ssh-(rsa|dss|ed25519|ecdsa-sha2-nistp(256|384|521))\s+[A-Za-z0-9+/=]+\s*(?:\S+\s*)?$/;
+    }
+    return regex.test(key.trim());
   };
 
   return (
