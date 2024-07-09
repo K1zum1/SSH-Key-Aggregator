@@ -34,14 +34,35 @@ const App = () => {
     }
   };
 
+  const handleDownloadJSON = async () => {
+    try {
+      const response = await fetch('/api/generateJSON');
+      if (!response.ok) {
+        throw new Error('Failed to generate KRL.');
+      }
+      const data = await response.json();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = 'revocation-list.json';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading JSON file:', error);
+      setError('Failed to download JSON file.');
+    }
+  };
+
   const handleDownloadKRL = async () => {
     try {
       const response = await fetch('/api/generateKrl');
       if (!response.ok) {
         throw new Error('Failed to generate KRL.');
       }
-      const data = await response.json();
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.style.display = 'none';
@@ -68,6 +89,7 @@ const App = () => {
         </div>
       )}
       <div className="button-container">
+        <button onClick={handleDownloadJSON}>Download JSON</button>
         <button onClick={handleDownloadKRL}>Download KRL</button>
       </div>
     </div>
