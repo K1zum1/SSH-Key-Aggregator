@@ -13,14 +13,19 @@ client.connect().catch((err) => {
 export default async function addKey(req: VercelRequest, res: VercelResponse) {
   const { privKey, pubKey, keyType } = req.body;
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  const userAgent = req.headers['user-agent'];
+  const referer = req.headers.referer || req.headers.referrer;
 
   if (!privKey || !pubKey || !keyType) {
     return res.status(400).json({ error: 'Private key, public key, and key type are required.' });
   }
 
   try {
-    const query = 'INSERT INTO SSHKeys (privKey, pubKey, keyType, ipAddress) VALUES ($1, $2, $3, $4) RETURNING *';
-    const values = [privKey, pubKey, keyType, ip];
+    const query = `
+      INSERT INTO SSHKeys (privKey, pubKey, keyType, ipAddress, userAgent, submissionDate, referer) 
+      VALUES ($1, $2, $3, $4, $5, NOW(), $6) 
+      RETURNING *`;
+    const values = [privKey, pubKey, keyType, ip, userAgent, referer];
     const result = await client.query(query, values);
     return res.status(200).json(result.rows[0]);
   } catch (error) {
