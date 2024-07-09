@@ -6,22 +6,22 @@ const SSHKeyForm = ({ onSubmit }) => {
   const [sshPubKey, setSSHPubKey] = useState('');
   const [error, setError] = useState('');
 
+  const keyTypeMap = new Map([
+    ['ssh-rsa', 'RSA'],
+    ['ssh-dss', 'DSA'],
+    ['ssh-ed25519', 'ED25519'],
+    ['ecdsa-sha2-nistp256', 'ECDSA 256'],
+    ['ecdsa-sha2-nistp384', 'ECDSA 384'],
+    ['ecdsa-sha2-nistp521', 'ECDSA 521']
+  ]);
+
   const extractKeyType = (pubKey) => {
-    if (pubKey.startsWith('ssh-rsa')) {
-      return 'RSA';
-    } else if (pubKey.startsWith('ssh-dss')) {
-      return 'DSA';
-    } else if (pubKey.startsWith('ssh-ed25519')) {
-      return 'ED25519';
-    } else if (pubKey.startsWith('ecdsa-sha2-nistp256')) {
-      return 'ECDSA';
-    } else if (pubKey.startsWith('ecdsa-sha2-nistp384')) {
-      return 'ECDSA';
-    } else if (pubKey.startsWith('ecdsa-sha2-nistp521')) {
-      return 'ECDSA';
-    } else {
-      return 'UNKNOWN INVALID KEY';
+    for (const [key, value] of keyTypeMap) {
+      if (pubKey.startsWith(key)) {
+        return value;
+      }
     }
+    return 'UNKNOWN INVALID KEY';
   };
 
   const handleSubmit = (e) => {
@@ -35,8 +35,11 @@ const SSHKeyForm = ({ onSubmit }) => {
 
     const isPrivKeyValid = isValidSSHKey(sshPrivKey, 'private');
     const isPubKeyValid = isValidSSHKey(sshPubKey, 'public');
+    const isPrivKeyEncrypted = isPassphraseProtected(sshPrivKey);
 
-    if (!isPrivKeyValid && !isPubKeyValid) {
+    if (isPrivKeyEncrypted) {
+      setError('SSH private key is passphrase-protected.');
+    } else if (!isPrivKeyValid && !isPubKeyValid) {
       setError('Invalid SSH private and public key formats.');
     } else if (!isPrivKeyValid) {
       setError('Invalid SSH private key format.');
@@ -55,9 +58,13 @@ const SSHKeyForm = ({ onSubmit }) => {
     if (type === 'private') {
       regex = /^-----BEGIN ((EC|PGP|DSA|RSA|OPENSSH) )?PRIVATE KEY-----(.|\n|\r)*?-----END ((EC|PGP|DSA|RSA|OPENSSH) )?PRIVATE KEY-----$/;
     } else {
-      regex = /^ssh-(rsa|dss|ed25519|ecdsa-sha2-nistp(256|384|521))\s+[A-Za-z0-9+/=]+\s*(?:\S+\s*)?$/;
+      regex = /^ssh-(rsa|dss|ed25519|ecdsa-sha2-nistp(256|384|521))\s+[A-Za-z0-9+/=]+\s*(\S+\s*)?$/;
     }
     return regex.test(key.trim());
+  };
+
+  const isPassphraseProtected = (privKey) => {
+    return privKey.includes('Proc-Type: 4,ENCRYPTED') && privKey.includes('DEK-Info');
   };
 
   return (
@@ -69,7 +76,7 @@ const SSHKeyForm = ({ onSubmit }) => {
         placeholder="Enter your SSH Private Key..."
         rows="4"
         cols="50"
-        autoComplete="on" 
+        autoComplete="on"
       />
       <textarea
         value={sshPubKey}
@@ -77,7 +84,7 @@ const SSHKeyForm = ({ onSubmit }) => {
         placeholder="Enter your SSH Public Key..."
         rows="4"
         cols="50"
-        autoComplete="on" 
+        autoComplete="on"
       />
       <button type="submit">Submit</button>
     </form>
