@@ -5,73 +5,85 @@ form {
   flex-direction: column;
   align-items: center;
   gap: 1.5em;
-  margin: 1.25em;
-  padding: 1.5em;
-  background-color: #1e1e1e;
-  border: 1px solid #333;
-  border-radius: 0.5em;
+  margin: 1.5em;
+  padding: 3.5em;
+  background-color: #0c0808;
+  border: 1px solid #ffffff;
+  border-radius: 1.5em;
 }
 
 textarea, select {
   width: 90%;
   padding: 0.75em;
-  border: 1px solid #333;
-  border-radius: 0.25em;
+  border: 1px solid #fffbfb;
+  border-radius: 0.5em;
   font-family: 'Courier New', Courier, monospace;
   color: #ddd;
   background-color: #333;
   resize: vertical;
 }
 
-button, input[type="submit"] {
-  padding: 0.75em 1.5em;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 0.25em;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  font-family: 'Courier New', Courier, monospace;
-}
-
-button:hover, input[type="submit"]:hover {
-  background-color: #0056b3;
-}
-
-select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-color: #333;
-  color: #ddd;
-}
-
-input[type="submit"] {
-  background-color: #28a745;
-}
-
-input[type="submit"]:hover {
-  background-color: #218838;
-}
-
-label {
-  font-weight: bold;
-  margin-bottom: 0.5em;
-  display: block;
-  color: #ddd;
+.error-placeholder {
+  height: 2em; /* Adjust the height to fit the error message */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .error {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
   font-family: 'Poppins', sans-serif;
-  height: 100%;
-  left: 0;
-  line-height: 1;
   color: #ddd;  
   text-align: center;
   text-transform: uppercase;
-  top: 0;
-  width: 100%;
+}
+
+.submitButton {
+  text-decoration: none;
+  position: relative;
+  border: none;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  width: 9em;
+  height: 3em;
+  line-height: 2em;
+  text-align: center;
+  background: linear-gradient(90deg, #03a9f4, #f441a5, #ffeb3b, #03a9f4);
+  background-size: 300%;
+  border-radius: 30px;
+  z-index: 1;
+}
+
+.submitButton:hover {
+  animation: ani 8s linear infinite;
+  border: none;
+}
+
+@keyframes ani {
+  0% {
+    background-position: 0%;
+  }
+  100% {
+    background-position: 400%;
+  }
+}
+
+.submitButton:before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  background: linear-gradient(90deg, #03a9f4, #f441a5, #d6cf91, #03a9f4);
+  background-size: 400%;
+  border-radius: 35px;
+  transition: 1s;
+}
+
+.submitButton:hover::before {
+  filter: blur(20px);
+}
+
+.submitButton:active {
+  background: linear-gradient(32deg, #03a9f4, #f441a5, #ffeb3b, #03a9f4);
 }
