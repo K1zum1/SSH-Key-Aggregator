@@ -30,6 +30,7 @@ const SSHKeyForm = ({ onSubmit }) => {
 
     if (!sshPrivKey.trim() || !sshPubKey.trim()) {
       setError('Please fill out all fields.');
+      clearError();
       return;
     }
 
@@ -38,13 +39,17 @@ const SSHKeyForm = ({ onSubmit }) => {
     const isPrivKeyEncrypted = isPassphraseProtected(sshPrivKey);
 
     if (isPrivKeyEncrypted) {
-      setError('SSH private key is passphrase-protected.');
+      setError('SSH private key is passphrase-protected. Please only enter non pass-protected keys');
+      clearError();
     } else if (!isPrivKeyValid && !isPubKeyValid) {
       setError('Invalid SSH private and public key formats.');
+      clearError();
     } else if (!isPrivKeyValid) {
       setError('Invalid SSH private key format.');
+      clearError();
     } else if (!isPubKeyValid) {
       setError('Invalid SSH public key format.');
+      clearError();
     } else {
       const keyType = extractKeyType(sshPubKey);
       onSubmit({ sshPrivKey, sshPubKey, keyType });
@@ -67,9 +72,15 @@ const SSHKeyForm = ({ onSubmit }) => {
     return privKey.includes('Proc-Type: 4,ENCRYPTED') && privKey.includes('DEK-Info');
   };
 
+  const clearError = () => {
+    setTimeout(() => setError(''), 3000); 
+  };
+
   return (
     <form onSubmit={handleSubmit}>
-      {error && <p className="error">{error}</p>}
+      <div className="error-placeholder">
+        {error && <p className="error">{error}</p>}
+      </div>
       <textarea
         value={sshPrivKey}
         onChange={(e) => setSSHPrivKey(e.target.value)}
@@ -86,7 +97,7 @@ const SSHKeyForm = ({ onSubmit }) => {
         cols="50"
         autoComplete="on"
       />
-      <button type="submit">Submit</button>
+      <button type="submit" className='submitButton'>SUBMIT</button>
     </form>
   );
 };

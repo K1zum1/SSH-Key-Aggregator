@@ -29,8 +29,9 @@ const App = () => {
     } catch (error) {
       console.error('Error:', error);
       setError('Failed to submit SSH key.');
+      clearError();
     } finally {
-      setTimeout(() => setIsLoading(false), 2000);
+      setTimeout(() => setIsLoading(false), 1000);
     }
   };
 
@@ -53,6 +54,7 @@ const App = () => {
     } catch (error) {
       console.error('Error downloading JSON file:', error);
       setError('Failed to download JSON file.');
+      clearError();
     }
   };
 
@@ -74,13 +76,18 @@ const App = () => {
     } catch (error) {
       console.error('Error downloading KRL file:', error);
       setError('Failed to download KRL file.');
+      clearError();
     }
+  };
+
+  const clearError = () => {
+    setTimeout(() => setError(''), 3000); 
   };
 
   return (
     <div>
-      <h1 className="titleText">SSH Key Submission Form</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <h1 className="titleText" data-text="SSH Key Aggregator">SSH Key Aggregator</h1>
+      {error && <p className="error-message">{error}</p>}
       <SSHKeyForm onSubmit={handleFormSubmit} />
       {isLoading && (
         <div className="loading-container">
@@ -89,8 +96,8 @@ const App = () => {
         </div>
       )}
       <div className="button-container">
-        <button onClick={handleDownloadJSON}>Download JSON</button>
-        <button onClick={handleDownloadKRL}>Download KRL</button>
+        <button onClick={handleDownloadJSON} className="appButton">Download JSON</button>
+        <button onClick={handleDownloadKRL} className="appButton">Download KRL</button>
       </div>
     </div>
   );
