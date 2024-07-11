@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SSHKeyForm from './components/SSHKeyForm';
+import InfoModal from './components/InfoModal';
 import './App.css';
 import { quantum } from 'ldrs';
 
@@ -8,6 +9,15 @@ quantum.register();
 const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showModal, setShowModal] = useState(true);
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  useEffect(() => {
+    setShowModal(true);
+  }, []);
 
   const handleFormSubmit = async ({ sshPrivKey, sshPubKey, keyType }) => {
     setIsLoading(true);
@@ -39,7 +49,7 @@ const App = () => {
     try {
       const response = await fetch('/api/generateJSON');
       if (!response.ok) {
-        throw new Error('Failed to generate KRL.');
+        throw new Error('Failed to generate JSON.');
       }
       const data = await response.json();
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -88,7 +98,10 @@ const App = () => {
     <div>
       <h1 className="titleText" data-text="SSH Key Aggregator">SSH Key Aggregator</h1>
       {error && <p className="error-message">{error}</p>}
-      <SSHKeyForm onSubmit={handleFormSubmit} />
+      <div className="app-container">
+        {showModal && <InfoModal onClose={handleCloseModal} />}
+        <SSHKeyForm onSubmit={handleFormSubmit} />
+      </div>
       {isLoading && (
         <div className="loading-container">
           <p className="loading-text">Submitting your key</p>
