@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import SSHKeyForm from './components/SSHKeyForm';
 import InfoModal from './components/InfoModal';
+import { dotStream } from 'ldrs'
 import './App.css';
-import { quantum } from 'ldrs';
-
-quantum.register();
+dotStream.register()
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -105,7 +104,7 @@ const App = () => {
       {isLoading && (
         <div className="loading-container">
           <p className="loading-text">Submitting your key</p>
-          <l-quantum size="35" speed="1.75" color="white"></l-quantum>
+          <l-dot-stream className="loading-dots" size="70" speed="1.75" color="white"></l-dot-stream>
         </div>
       )}
       <div className="button-container">
@@ -113,7 +112,8 @@ const App = () => {
         <button onClick={handleDownloadKRL} className="appButton">Download KRL</button>
       </div>
     </div>
-  );
-};
+  )};
+  
+  
 
 export default App;
