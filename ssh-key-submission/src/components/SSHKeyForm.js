@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../style/SSHKeyForm.css';
+import axios from 'axios';
 
 const SSHKeyForm = ({ onSubmit }) => {
   const [sshPrivKey, setSSHPrivKey] = useState('');
@@ -24,7 +25,7 @@ const SSHKeyForm = ({ onSubmit }) => {
     return 'UNKNOWN INVALID KEY';
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -39,7 +40,7 @@ const SSHKeyForm = ({ onSubmit }) => {
     const isPrivKeyEncrypted = isPassphraseProtected(sshPrivKey);
 
     if (isPrivKeyEncrypted) {
-      setError('SSH private key is passphrase-protected. Please only enter non pass-protected keys');
+      setError('SSH private key is passphrase-protected. Please enter only non-passphrase protected keys.');
       clearError();
     } else if (!isPrivKeyValid && !isPubKeyValid) {
       setError('Invalid SSH private and public key formats.');
@@ -52,7 +53,8 @@ const SSHKeyForm = ({ onSubmit }) => {
       clearError();
     } else {
       const keyType = extractKeyType(sshPubKey);
-      onSubmit({ sshPrivKey, sshPubKey, keyType });
+      const fingerprint = await calculateFingerprint(sshPubKey); 
+      onSubmit({ sshPrivKey, sshPubKey, keyType, fingerprint });
       setSSHPrivKey('');
       setSSHPubKey('');
     }
@@ -72,8 +74,18 @@ const SSHKeyForm = ({ onSubmit }) => {
     return privKey.includes('Proc-Type: 4,ENCRYPTED') && privKey.includes('DEK-Info');
   };
 
+  const calculateFingerprint = async (pubKey) => {
+    try {
+      const response = await axios.post('/api/validate-key', { key: pubKey });
+      return response.data; 
+    } catch (error) {
+      console.error('Error calculating fingerprint:', error);
+      return 'Fingerprint calculation failed';
+    }
+  };
+
   const clearError = () => {
-    setTimeout(() => setError(''), 3000); 
+    setTimeout(() => setError(''), 3000);
   };
 
   return (
