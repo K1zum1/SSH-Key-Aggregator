@@ -77,7 +77,7 @@ export default async function validateKey(req: VercelRequest, res: VercelRespons
     return res.status(400).json({ error: 'Both privateKey and publicKey must be provided.' });
   }
 
-  // Validate the provided keys
+  
   const privateKeyValidation = isValidSSHPrivateKey(privateKey);
   const publicKeyValidation = isValidSSHPublicKey(publicKey);
 
@@ -88,13 +88,13 @@ export default async function validateKey(req: VercelRequest, res: VercelRespons
     return res.status(400).json({ error: publicKeyValidation.error });
   }
 
-  // Extract the public key from the provided private key
+  
   const extractedPublicKey = extractPublicKeyFromPrivateKey(privateKey);
   if (!extractedPublicKey) {
     return res.status(500).json({ error: 'Failed to extract public key from private key.' });
   }
 
-  // Calculate the fingerprints
+  
   const extractedFingerprint = calculateSSHPublicKeyFingerprint(extractedPublicKey);
   const providedFingerprint = calculateSSHPublicKeyFingerprint(publicKey);
 
@@ -102,11 +102,11 @@ export default async function validateKey(req: VercelRequest, res: VercelRespons
     return res.status(500).json({ error: 'Failed to calculate fingerprints.' });
   }
 
-  // Log the fingerprints
+  
   console.log(`Extracted Fingerprint: ${extractedFingerprint}`);
   console.log(`Provided Fingerprint: ${providedFingerprint}`);
 
-  // Compare the fingerprints
+  
   const isValid = extractedFingerprint === providedFingerprint;
   return res.status(200).json({ valid: isValid, fingerprint: providedFingerprint });
 }
