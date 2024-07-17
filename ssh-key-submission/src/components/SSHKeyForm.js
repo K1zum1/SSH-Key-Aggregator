@@ -29,71 +29,73 @@ const SSHKeyForm = ({ onSubmit }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setStatus('Checking regex...');
+    setStatus('Checking formatting of keys...');
 
-    if (!sshPrivKey.trim() || !sshPubKey.trim()) {
-      setError('Please fill out all fields.');
-      setStatus('');
-      clearError();
-      clearStatus();
-      return;
-    }
+    setTimeout(async () => {
+      if (!sshPrivKey.trim() || !sshPubKey.trim()) {
+        setError('Please fill out all fields.');
+        setStatus('');
+        clearError();
+        clearStatus();
+        return;
+      }
 
-    const isPrivKeyValid = isValidSSHKey(sshPrivKey, 'private');
-    const isPubKeyValid = isValidSSHKey(sshPubKey, 'public');
-    const isPrivKeyEncrypted = isPassphraseProtected(sshPrivKey);
+      const isPrivKeyValid = isValidSSHKey(sshPrivKey, 'private');
+      const isPubKeyValid = isValidSSHKey(sshPubKey, 'public');
+      const isPrivKeyEncrypted = isPassphraseProtected(sshPrivKey);
 
-    if (isPrivKeyEncrypted) {
-      setError('SSH private key is passphrase-protected. Please enter only non-passphrase protected keys.');
-      setStatus('');
-      clearError();
-      clearStatus();
-    } else if (!isPrivKeyValid && !isPubKeyValid) {
-      setError('Invalid SSH private and public key formats.');
-      setStatus('');
-      clearError();
-      clearStatus();
-    } else if (!isPrivKeyValid) {
-      setError('Invalid SSH private key format.');
-      setStatus('');
-      clearError();
-      clearStatus();
-    } else if (!isPubKeyValid) {
-      setError('Invalid SSH public key format.');
-      setStatus('');
-      clearError();
-      clearStatus();
-    } else {
-      try {
-        const keyType = extractKeyType(sshPubKey);
-        setStatus('Checking fingerprint...');
-        const response = await axios.post('/api/validate-key', {
-          privateKey: sshPrivKey,
-          publicKey: sshPubKey
-        });
+      if (isPrivKeyEncrypted) {
+        setError('SSH private key is passphrase-protected. Please enter only non-passphrase protected keys.');
+        setStatus('');
+        clearError();
+        clearStatus();
+      } else if (!isPrivKeyValid && !isPubKeyValid) {
+        setError('Invalid SSH private and public key formats.');
+        setStatus('');
+        clearError();
+        clearStatus();
+      } else if (!isPrivKeyValid) {
+        setError('Invalid SSH private key format.');
+        setStatus('');
+        clearError();
+        clearStatus();
+      } else if (!isPubKeyValid) {
+        setError('Invalid SSH public key format.');
+        setStatus('');
+        clearError();
+        clearStatus();
+      } else {
+        try {
+          const keyType = extractKeyType(sshPubKey);
+          setStatus('Checking fingerprint of keys...');
+          const response = await axios.post('/api/validate-key', {
+            privateKey: sshPrivKey,
+            publicKey: sshPubKey
+          });
 
-        console.log('Fingerprint Calculation Response:', response.data);
+          console.log('Fingerprint Calculation Response:', response.data);
 
-        if (response.data.valid) {
-          setStatus('Submission successful');
-          onSubmit({ sshPrivKey, sshPubKey, keyType, fingerprint: response.data.fingerprint });
-          setSSHPrivKey('');
-          setSSHPubKey('');
-          clearStatus();
-        } else {
-          setError('The private and public keys do not match.');
+          if (response.data.valid) {
+            onSubmit({ sshPrivKey, sshPubKey, keyType, fingerprint: response.data.fingerprint });
+            setSSHPrivKey('');
+            setSSHPubKey('');
+            clearError();
+            clearStatus();
+          } else {
+            setError('The private and public keys do not match.');
+            setStatus('');
+            clearError();
+            clearStatus();
+          }
+        } catch (error) {
+          console.error('Error handling form submission:', error);
+          setError('Failed to submit SSH keys. Please try again.');
           setStatus('');
           clearError();
           clearStatus();
         }
-      } catch (error) {
-        console.error('Error handling form submission:', error);
-        setError('Failed to submit SSH keys. Please try again.');
-        setStatus('');
-        clearError();
-        clearStatus();
       }
-    }
+    }, 1000);
   };
 
   const isValidSSHKey = (key, type) => {

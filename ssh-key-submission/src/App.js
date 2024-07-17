@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import SSHKeyForm from './components/SSHKeyForm';
 import InfoModal from './components/InfoModal';
-import { dotStream } from 'ldrs'
+import { dotStream } from 'ldrs';
 import './App.css';
-dotStream.register()
+
+dotStream.register();
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [status, setStatus] = useState('');
   const [showModal, setShowModal] = useState(true);
 
   const handleCloseModal = () => {
@@ -20,6 +22,7 @@ const App = () => {
 
   const handleFormSubmit = async ({ sshPrivKey, sshPubKey, keyType }) => {
     setIsLoading(true);
+    setStatus('Submitting your key');
     try {
       const response = await fetch('/api/add-key', {
         method: 'POST',
@@ -35,10 +38,12 @@ const App = () => {
 
       const data = await response.json();
       console.log('Submitted SSH key successfully:', data);
+      setStatus('Submission successful');
     } catch (error) {
       console.error('Error:', error);
       setError('Failed to submit SSH key.');
       clearError();
+      setStatus('');
     } finally {
       setTimeout(() => setIsLoading(false), 1000);
     }
@@ -90,7 +95,7 @@ const App = () => {
   };
 
   const clearError = () => {
-    setTimeout(() => setError(''), 3000); 
+    setTimeout(() => setError(''), 3000);
   };
 
   return (
@@ -111,9 +116,11 @@ const App = () => {
         <button onClick={handleDownloadJSON} className="appButton">Download JSON</button>
         <button onClick={handleDownloadKRL} className="appButton">Download KRL</button>
       </div>
+      <div className="status-message">
+        {status && <p>{status}</p>}
+      </div>
     </div>
-  )};
-  
-  
+  );
+};
 
 export default App;
