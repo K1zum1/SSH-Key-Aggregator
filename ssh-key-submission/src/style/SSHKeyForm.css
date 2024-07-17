@@ -23,16 +23,23 @@ textarea, select {
   resize: vertical;
 }
 
-.error-placeholder {
-  height: 2em; /* Adjust the height to fit the error message */
+.message-placeholder {
+  height: 2em;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.status {
+  font-family: 'Poppins', sans-serif;
+  color: #ffeb3b;
+  text-align: center;
+  text-transform: uppercase;
+}
+
 .error {
   font-family: 'Poppins', sans-serif;
-  color: #ddd;  
+  color: #ddd;
   text-align: center;
   text-transform: uppercase;
 }

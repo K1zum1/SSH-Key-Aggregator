@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import '../style/SSHKeyForm.css';
 import axios from 'axios';
+import '../style/SSHKeyForm.css';
 
 const SSHKeyForm = ({ onSubmit }) => {
   const [sshPrivKey, setSSHPrivKey] = useState('');
   const [sshPubKey, setSSHPubKey] = useState('');
   const [error, setError] = useState('');
+  const [status, setStatus] = useState('');
 
   const keyTypeMap = new Map([
     ['ssh-rsa', 'RSA'],
@@ -28,10 +29,13 @@ const SSHKeyForm = ({ onSubmit }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setStatus('Checking regex...');
 
     if (!sshPrivKey.trim() || !sshPubKey.trim()) {
       setError('Please fill out all fields.');
+      setStatus('');
       clearError();
+      clearStatus();
       return;
     }
 
@@ -41,29 +45,61 @@ const SSHKeyForm = ({ onSubmit }) => {
 
     if (isPrivKeyEncrypted) {
       setError('SSH private key is passphrase-protected. Please enter only non-passphrase protected keys.');
+      setStatus('');
       clearError();
+      clearStatus();
     } else if (!isPrivKeyValid && !isPubKeyValid) {
       setError('Invalid SSH private and public key formats.');
+      setStatus('');
       clearError();
+      clearStatus();
     } else if (!isPrivKeyValid) {
       setError('Invalid SSH private key format.');
+      setStatus('');
       clearError();
+      clearStatus();
     } else if (!isPubKeyValid) {
       setError('Invalid SSH public key format.');
+      setStatus('');
       clearError();
+      clearStatus();
     } else {
-      const keyType = extractKeyType(sshPubKey);
-      const fingerprint = await calculateFingerprint(sshPubKey); 
-      onSubmit({ sshPrivKey, sshPubKey, keyType, fingerprint });
-      setSSHPrivKey('');
-      setSSHPubKey('');
+      try {
+        const keyType = extractKeyType(sshPubKey);
+        setStatus('Checking fingerprint...');
+        const response = await axios.post('/api/validate-key', {
+          privateKey: sshPrivKey,
+          publicKey: sshPubKey
+        });
+
+        console.log('Fingerprint Calculation Response:', response.data);
+
+        if (response.data.valid) {
+          setStatus('Submission successful');
+          onSubmit({ sshPrivKey, sshPubKey, keyType, fingerprint: response.data.fingerprint });
+          setSSHPrivKey('');
+          setSSHPubKey('');
+          clearStatus();
+        } else {
+          setError('The private and public keys do not match.');
+          setStatus('');
+          clearError();
+          clearStatus();
+        }
+      } catch (error) {
+        console.error('Error handling form submission:', error);
+        setError('Failed to submit SSH keys. Please try again.');
+        setStatus('');
+        clearError();
+        clearStatus();
+      }
     }
   };
 
   const isValidSSHKey = (key, type) => {
     let regex;
     if (type === 'private') {
-      regex = /^-----BEGIN ((EC|PGP|DSA|RSA|OPENSSH) )?PRIVATE KEY-----(.|\n|\r)*?-----END ((EC|PGP|DSA|RSA|OPENSSH) )?PRIVATE KEY-----$/;
+      regex = /^-----BEGIN ((RSA|DSA|ECDSA|OPENSSH) )?PRIVATE KEY-----(.|\n|\r)*?-----END ((RSA|DSA|ECDSA|OPENSSH) )?PRIVATE KEY-----$/;
     } else {
       regex = /^ssh-(rsa|dss|ed25519|ecdsa-sha2-nistp(256|384|521))\s+[A-Za-z0-9+/=]+\s*(\S+\s*)?$/;
     }
@@ -74,23 +110,18 @@ const SSHKeyForm = ({ onSubmit }) => {
     return privKey.includes('Proc-Type: 4,ENCRYPTED') && privKey.includes('DEK-Info');
   };
 
-  const calculateFingerprint = async (pubKey) => {
-    try {
-      const response = await axios.post('/api/validate-key', { key: pubKey });
-      return response.data; 
-    } catch (error) {
-      console.error('Error calculating fingerprint:', error);
-      return 'Fingerprint calculation failed';
-    }
-  };
-
   const clearError = () => {
     setTimeout(() => setError(''), 3000);
   };
 
+  const clearStatus = () => {
+    setTimeout(() => setStatus(''), 3000);
+  };
+
   return (
     <form onSubmit={handleSubmit}>
-      <div className="error-placeholder">
+      <div className="message-placeholder">
+        {status && !error && <p className="status">{status}</p>}
         {error && <p className="error">{error}</p>}
       </div>
       <textarea
