@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../style/SSHKeyForm.css';
 
-const SSHKeyForm = ({ onSubmit }) => {
+const SSHKeyForm = ({ onSubmit, externalError }) => {
   const [sshPrivKey, setSSHPrivKey] = useState('');
   const [sshPubKey, setSSHPubKey] = useState('');
   const [error, setError] = useState('');
   const [status, setStatus] = useState('');
+
+  useEffect(() => {
+    if (externalError) {
+      setError(externalError);
+      clearError();
+    }
+  }, [externalError]);
 
   const keyTypeMap = new Map([
     ['ssh-rsa', 'RSA'],
@@ -29,7 +36,7 @@ const SSHKeyForm = ({ onSubmit }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setStatus('Checking formatting of keys...');
+    setStatus('Checking SSH key formatting...');
 
     setTimeout(async () => {
       if (!sshPrivKey.trim() || !sshPubKey.trim()) {
@@ -67,7 +74,7 @@ const SSHKeyForm = ({ onSubmit }) => {
       } else {
         try {
           const keyType = extractKeyType(sshPubKey);
-          setStatus('Checking fingerprint of keys...');
+          setStatus('Comparing fingerprints...');
           const response = await axios.post('/api/validate-key', {
             privateKey: sshPrivKey,
             publicKey: sshPubKey
@@ -76,11 +83,11 @@ const SSHKeyForm = ({ onSubmit }) => {
           console.log('Fingerprint Calculation Response:', response.data);
 
           if (response.data.valid) {
-            onSubmit({ sshPrivKey, sshPubKey, keyType, fingerprint: response.data.fingerprint });
+            onSubmit({ sshPrivKey, sshPubKey, keyType, fingerprintValidated: response.data.fingerprintValidated, setError });
             setSSHPrivKey('');
             setSSHPubKey('');
-            clearError();
             clearStatus();
+            clearError();
           } else {
             setError('The private and public keys do not match.');
             setStatus('');
@@ -113,11 +120,11 @@ const SSHKeyForm = ({ onSubmit }) => {
   };
 
   const clearError = () => {
-    setTimeout(() => setError(''), 3000);
+    setTimeout(() => setError(''), 2000);
   };
 
   const clearStatus = () => {
-    setTimeout(() => setStatus(''), 3000);
+    setTimeout(() => setStatus(''), 2000);
   };
 
   return (
