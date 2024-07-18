@@ -2,7 +2,7 @@
 
 ## Description
 
-SSH Blacklister is a web application designed to manage the submission and tracking of SSH keys. It allows users to submit SSH private and public keys, ensures their validity, and stores them securely in a PostgreSQL database. This project is useful for administrators and developers who need to track SSH keys, monitor their usage, and ensure compliance with security policies. This is being completed as part of my internship journey at the National Center for Supercomputing Applications
+SSH Blacklister is a web application designed to manage the submission and tracking of SSH keys. It allows users to submit SSH private and public keys, ensures their validity, and stores them securely in a database. This project is useful for administrators and developers who are looking to generate key revocation lists in order to blacklist these compromised keys. 
 
 ## Features
 
@@ -11,7 +11,6 @@ SSH Blacklister is a web application designed to manage the submission and track
 - **Key Type Extraction**: Automatically identifies the type of SSH key submitted (e.g., RSA, DSA, ECDSA, ED25519).
 - **Metadata Tracking**: Logs additional metadata such as IP address, user agent, submission date, and referrer URL.
 - **Error Handling**: Provides informative error messages for invalid key submissions.
-- **Security**: Rejects passphrase-protected keys to maintain a simple validation process.
 
 ## Installation
 
@@ -30,6 +29,14 @@ SSH Blacklister is a web application designed to manage the submission and track
     ```sh
     npm run dev
     ```
+## Limitations
+
+Currently as of now there are a few known limitations
+- **Limited Database Size**
+- **Only checks for RSA fingerprints. Does not check other types**
+- **Does not generate a .krl file, only gives JSON data of the public keys**
+
+All of these issues are being worked on currently.
 
 
 
