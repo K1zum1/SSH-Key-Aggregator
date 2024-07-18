@@ -43,9 +43,11 @@ const App = () => {
       const data = await response.json();
       console.log('Submitted SSH key successfully:', data);
       setSuccess('Submission successful');
+      clearSuccess();
     } catch (error) {
       console.error('Error:', error);
       setError(error.message);
+      clearError();
     } finally {
       setTimeout(() => setIsLoading(false), 1000);
     }
@@ -85,7 +87,7 @@ const App = () => {
       const a = document.createElement('a');
       a.style.display = 'none';
       a.href = url;
-      a.download = 'public-keys.txt';
+      a.download = 'public-keys.json';
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
