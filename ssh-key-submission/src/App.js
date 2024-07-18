@@ -9,7 +9,7 @@ dotStream.register();
 const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [status, setStatus] = useState('');
+  const [success, setSuccess] = useState('');
   const [showModal, setShowModal] = useState(true);
 
   const handleCloseModal = () => {
@@ -20,17 +20,21 @@ const App = () => {
     setShowModal(true);
   }, []);
 
-  const handleFormSubmit = async ({ sshPrivKey, sshPubKey, keyType }) => {
+  const handleFormSubmit = async ({ sshPrivKey, sshPubKey, keyType, fingerprintValidated }) => {
     setIsLoading(true);
-    setStatus('Submitting your key');
+    setSuccess('');
     try {
       const response = await fetch('/api/add-key', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ privKey: sshPrivKey, pubKey: sshPubKey, keyType }),
+        body: JSON.stringify({ privKey: sshPrivKey, pubKey: sshPubKey, keyType, fingerprintValidated }),
       });
+
+      if (response.status === 409) {
+        throw new Error('This private or public key has already been submitted.');
+      }
 
       if (!response.ok) {
         throw new Error('Failed to submit SSH key.');
@@ -38,12 +42,10 @@ const App = () => {
 
       const data = await response.json();
       console.log('Submitted SSH key successfully:', data);
-      setStatus('Submission successful');
+      setSuccess('Submission successful');
     } catch (error) {
       console.error('Error:', error);
-      setError('Failed to submit SSH key.');
-      clearError();
-      setStatus('');
+      setError(error.message);
     } finally {
       setTimeout(() => setIsLoading(false), 1000);
     }
@@ -51,7 +53,7 @@ const App = () => {
 
   const handleDownloadJSON = async () => {
     try {
-      const response = await fetch('/api/generateJSON');
+      const response = await fetch('/api/generatefullData');
       if (!response.ok) {
         throw new Error('Failed to generate JSON.');
       }
@@ -72,39 +74,42 @@ const App = () => {
     }
   };
 
-  const handleDownloadKRL = async () => {
+  const handleDownloadPubKeys = async () => {
     try {
-      const response = await fetch('/api/generateKrl');
+      const response = await fetch('/api/generatepubKey');
       if (!response.ok) {
-        throw new Error('Failed to generate KRL.');
+        throw new Error('Failed to generate public keys.');
       }
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.style.display = 'none';
       a.href = url;
-      a.download = 'revocation-list.krl';
+      a.download = 'public-keys.txt';
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Error downloading KRL file:', error);
-      setError('Failed to download KRL file.');
+      console.error('Error downloading public keys file:', error);
+      setError('Failed to download public keys file.');
       clearError();
     }
   };
 
   const clearError = () => {
-    setTimeout(() => setError(''), 3000);
+    setTimeout(() => setError(''), 3000); 
+  };
+
+  const clearSuccess = () => {
+    setTimeout(() => setSuccess(''), 3000); 
   };
 
   return (
     <div>
       <h1 className="titleText" data-text="SSH Key Aggregator">SSH Key Aggregator</h1>
-      {error && <p className="error-message">{error}</p>}
       <div className="app-container">
         {showModal && <InfoModal onClose={handleCloseModal} />}
-        <SSHKeyForm onSubmit={handleFormSubmit} />
+        <SSHKeyForm onSubmit={handleFormSubmit} externalError={error} />
       </div>
       {isLoading && (
         <div className="loading-container">
@@ -112,12 +117,14 @@ const App = () => {
           <l-dot-stream className="loading-dots" size="70" speed="1.75" color="white"></l-dot-stream>
         </div>
       )}
+      {!isLoading && success && (
+        <div className="success-container">
+          <p className="success-message">{success}</p>
+        </div>
+      )}
       <div className="button-container">
-        <button onClick={handleDownloadJSON} className="appButton">Download JSON</button>
-        <button onClick={handleDownloadKRL} className="appButton">Download KRL</button>
-      </div>
-      <div className="status-message">
-        {status && <p>{status}</p>}
+        <button onClick={handleDownloadJSON} className="appButton">Download Full Data</button>
+        <button onClick={handleDownloadPubKeys} className="appButton">Download Public Keys</button>
       </div>
     </div>
   );
