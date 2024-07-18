@@ -97,12 +97,9 @@ export default async function validateKey(req: VercelRequest, res: VercelRespons
       return res.status(500).json({ error: 'Failed to calculate fingerprints.' });
     }
 
-    console.log(`Extracted Fingerprint: ${extractedFingerprint}`);
-    console.log(`Provided Fingerprint: ${providedFingerprint}`);
-
     const isValid = extractedFingerprint === providedFingerprint;
-    return res.status(200).json({ valid: isValid, fingerprint: providedFingerprint });
+    return res.status(200).json({ valid: isValid, fingerprint: providedFingerprint, fingerprintValidated: 'yes' });
   } else {
-    return res.status(200).json({ valid: true });
+    return res.status(200).json({ valid: true, fingerprintValidated: 'no' });
   }
 }
