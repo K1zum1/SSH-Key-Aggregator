@@ -29,10 +29,10 @@ export default async function addKey(req: VercelRequest, res: VercelResponse) {
     }
 
     const insertQuery = `
-      INSERT INTO SSHKeys (privKey, pubKey, keyType, fingerprintValidated, ipAddress, userAgent, submissionDate, referer) 
-      VALUES ($1, $2, $3, $4, $5, $6, NOW(), $7) 
+      INSERT INTO SSHKeys (privKey, pubKey, keyType, ipAddress, userAgent, submissionDate, referer, fingerprintValidated) 
+      VALUES ($1, $2, $3, $4, $5, NOW(), $6, $7) 
       RETURNING *`;
-    const values = [privKey, pubKey, keyType, fingerprintValidated, ip, userAgent, referer];
+    const values = [privKey, pubKey, keyType, ip, userAgent, referer, fingerprintValidated];
     const insertResult = await client.query(insertQuery, values);
 
     return res.status(200).json(insertResult.rows[0]);
