@@ -16,7 +16,7 @@ export default async function generateKRL(req: VercelRequest, res: VercelRespons
 
     return res.status(200).json(pubData);
   } catch (error) {
-    console.error('Error generating KRL:', error);
-    return res.status(500).json({ error: 'Failed to grab JSON data.' });
+    console.error('Error generating public keys:', error);
+    return res.status(500).json({ error: 'Failed to grab data.' });
   }
 }
