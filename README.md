@@ -4,31 +4,6 @@
 
 SSH Blacklister is a web application designed to manage the submission and tracking of SSH keys. It allows users to submit SSH private and public keys, ensures their validity, and stores them securely in a database. This project is useful for administrators and developers who are looking to generate key revocation lists in order to blacklist these compromised keys. 
 
-## Features
-
-- **SSH Key Submission**: Users can submit SSH private and public keys via a web form.
-- **Key Validation**: The application validates the format of both private and public SSH keys before accepting them.
-- **Key Type Extraction**: Automatically identifies the type of SSH key submitted (e.g., RSA, DSA, ECDSA, ED25519).
-- **Metadata Tracking**: Logs additional metadata such as IP address, user agent, submission date, and referrer URL.
-- **Error Handling**: Provides informative error messages for invalid key submissions.
-
-## Installation
-
-1. Clone the repository:
-    ```sh
-    git clone https://github.com/K1zum1/ssh-blacklister.git
-    cd ssh-blacklister
-    ```
-
-2. Install dependencies:
-    ```sh
-    npm install
-    ```
-
-4. Run the application locally:
-    ```sh
-    npm run dev
-    ```
 ## Limitations
 
 Currently as of now there are a few known limitations
@@ -37,6 +12,59 @@ Currently as of now there are a few known limitations
 - **Does not generate a .krl file, only gives JSON data of the public keys**
 
 All of these issues are being worked on currently.
+
+## Redeployment
+ 
+### Clone the repository 
+
+```bash
+https://github.com/K1zum1/SSH-Key-Aggregator.git
+cd SSH-Key-Aggregator
+```
+## Install Project Dependancies
+```bash
+npm install
+```
+
+## Create a .env file in the project root:
+```bash
+touch .env
+```
+
+## Add a PostgreSQL connection detail
+```
+POSTGRES_URL=postgres://ssh_user:your_password@localhost:5432/SSH-Key-Aggregator
+```
+
+## Create the necessary tables
+
+```sql
+CREATE TABLE SSHKeys (
+    id SERIAL PRIMARY KEY,
+    privKey TEXT,
+    pubKey TEXT,
+    keyType VARCHAR(10),
+    ipAddress VARCHAR(45),
+    userAgent TEXT,
+    submissionDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    referer TEXT,
+    fingerprintValidated VARCHAR(3)
+);
+```
+
+## Build and deploy using npm or vercel
+
+```bash
+npm run build
+npm start
+```
+
+```bash
+vercel dev
+```
+
+
+
 
 
 
