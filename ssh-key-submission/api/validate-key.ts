@@ -7,7 +7,11 @@ const isValidSSHPrivateKey = (key: string | undefined): { valid: boolean, error?
     return { valid: false, error: 'SSH private key is missing.' };
   }
 
-  const privateKeyPattern = /^-----BEGIN ((EC|PGP|DSA|RSA|ECDSA|OPENSSH) )?PRIVATE KEY-----(.|\n|\r)*?-----END ((EC|PGP|DSA|RSA|ECDSA|OPENSSH) )?PRIVATE KEY-----$/;
+  if (key.includes('-----BEGIN OPENSSH CERTIFICATE-----')) {
+    return { valid: false, error: 'OPENSSH certificates are not supported.' };
+  }
+
+  const privateKeyPattern = /^-----BEGIN ((EC|DSA|RSA|ECDSA|OPENSSH) )?PRIVATE KEY-----(.|\n|\r)*?-----END ((EC|PGP|DSA|RSA|ECDSA) )?PRIVATE KEY-----$/;
   if (!privateKeyPattern.test(key.trim())) {
     return { valid: false, error: 'Invalid SSH private key format.' };
   }
@@ -29,6 +33,10 @@ const isValidSSHPublicKey = (key: string | undefined): { valid: boolean, error?:
 
   if (!publicKeyPattern.test(key.trim())) {
     return { valid: false, error: 'Invalid SSH public key format.' };
+  }
+
+  if (key.includes('ssh-rsa-cert-v01@openssh.com') || key.includes('ssh-dss-cert-v01@openssh.com')) {
+    return { valid: false, error: 'OPEN1SSH certificates are not supported.' };
   }
 
   return { valid: true };
