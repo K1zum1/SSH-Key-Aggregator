@@ -36,7 +36,7 @@ const isValidSSHPublicKey = (key: string | undefined): { valid: boolean, error?:
   }
 
   if (key.includes('ssh-rsa-cert-v01@openssh.com') || key.includes('ssh-dss-cert-v01@openssh.com')) {
-    return { valid: false, error: 'OPEN1SSH certificates are not supported.' };
+    return { valid: false, error: 'OPENSSH certificates are not supported.' };
   }
 
   return { valid: true };
@@ -86,15 +86,18 @@ export default async function validateKey(req: VercelRequest, res: VercelRespons
   const publicKeyValidation = isValidSSHPublicKey(publicKey);
 
   if (!privateKeyValidation.valid) {
+    console.error(`Private Key Validation Error: ${privateKeyValidation.error}`);
     return res.status(400).json({ error: privateKeyValidation.error });
   }
   if (!publicKeyValidation.valid) {
+    console.error(`Public Key Validation Error: ${publicKeyValidation.error}`);
     return res.status(400).json({ error: publicKeyValidation.error });
   }
 
   if (privateKey.includes('RSA PRIVATE KEY')) {
     const extractedPublicKey = extractPublicKeyFromPrivateKey(privateKey);
     if (!extractedPublicKey) {
+      console.error('Failed to extract public key from private key.');
       return res.status(500).json({ error: 'Failed to extract public key from private key.' });
     }
 
@@ -102,6 +105,7 @@ export default async function validateKey(req: VercelRequest, res: VercelRespons
     const providedFingerprint = calculateSSHPublicKeyFingerprint(publicKey);
 
     if (!extractedFingerprint || !providedFingerprint) {
+      console.error('Failed to calculate fingerprints.');
       return res.status(500).json({ error: 'Failed to calculate fingerprints.' });
     }
 
