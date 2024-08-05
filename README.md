@@ -1,4 +1,4 @@
-# Project Name: SSH Key Aggregator
+Compromise Vault: A web application designed to securely aggregate and manage known compromised SSH keys, providing system administrators with a centralized repository to enhance security measures and prevent unauthorized access.
 ![SSH Key Submission](ssh-key-submission/ssh.jpg)
 
 
@@ -23,7 +23,7 @@
 
 ## Description
 
-SSH Blacklister is a web application designed to manage the submission and tracking of SSH keys. It allows users to submit SSH private and public keys, ensures their validity, and stores them securely in a database. This project is useful for administrators and developers who are looking to generate key revocation lists in order to blacklist these compromised keys. 
+Compromise Vault is a web application designed to manage the submission and tracking of SSH keys. It allows users to submit SSH private and public keys, ensures their validity, and stores them securely in a database. This project is useful for administrators and developers who are looking to generate key revocation lists in order to blacklist these compromised keys. 
 
 ## Limitations
 
@@ -39,8 +39,8 @@ All of these issues are being worked on currently.
 ### Clone the repository 
 
 ```bash
-https://github.com/K1zum1/SSH-Key-Aggregator.git
-cd SSH-Key-Aggregator
+https://github.com/K1zum1/Compromise-Vault
+cd Compromise-Vault
 ```
 ## Install Project Dependancies
 ```bash
